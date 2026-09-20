@@ -94,3 +94,120 @@ The `uname -a` command displays detailed information about the Linux
 system and kernel. The output shows that the system is running the
 Kali Linux kernel `7.0.12+kali-amd64` on a 64-bit (`x86_64`)
 architecture.
+
+---
+
+## Lab 02 - File System Navigation
+
+### Objective
+
+The objective of this lab is to practice navigating the Linux file system
+using basic command-line tools.
+
+### Check Current Working Directory
+
+Command:
+
+```bash
+pwd
+```
+### Result
+
+```text
+/home/kali
+```
+
+### Explanation
+
+The `pwd` command stands for **Print Working Directory**.
+It displays the full path of the directory I am currently working in.
+
+The result `/home/kali` shows that I am currently in the home
+directory of the `kali` user.
+### List Files and Directories
+
+Command:
+
+```bash
+ls
+```
+
+### Result
+
+The command displayed the files and directories located in my current
+working directory, including standard directories such as:
+
+```text
+Desktop
+Documents
+Downloads
+Music
+Pictures
+Projects
+Public
+Templates
+Videos
+```
+
+### Explanation
+
+The `ls` command lists the files and directories in the current working
+directory. It is commonly used to inspect the contents of a directory
+before navigating to or working with files.
+
+### View Detailed and Hidden Files
+
+Command:
+
+```bash
+ls -la
+```
+
+### Result
+
+Example entries from the output:
+
+```text
+drwxr-xr-x  2 kali kali  4096 Desktop
+drwxr-xr-x  2 kali kali  4096 Documents
+drwxr-xr-x  2 kali kali  4096 Downloads
+drwxr-xr-x  2 kali kali  4096 Pictures
+drwxr-xr-x  2 kali kali  4096 Projects
+drwxr-xr-x  2 kali kali  4096 Public
+drwxr-xr-x  2 kali kali  4096 Templates
+drwxr-xr-x  2 kali kali  4096 Videos
+```
+
+### Explanation
+
+The `ls -la` command displays a detailed listing of files and directories.
+
+- `-l` displays detailed information such as permissions, owner, group, and size.
+- `-a` includes hidden files and directories.
+- Files beginning with `.` are normally hidden in Linux.
+
+This command is useful for examining file ownership and permissions during
+Linux system administration and security analysis.
+
+### Change Directory
+
+Command:
+
+```bash
+cd Documents
+pwd
+```
+
+### Result
+
+```text
+/home/kali/Documents
+```
+
+### Explanation
+
+The `cd` command stands for **Change Directory** and is used to move
+between directories in the Linux file system.
+
+In this example, I moved from `/home/kali` to the `Documents` directory.
+The `pwd` command was then used to confirm the current working directory.
