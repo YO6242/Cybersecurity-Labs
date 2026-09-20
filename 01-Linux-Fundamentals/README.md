@@ -400,4 +400,186 @@ directory was successfully removed.
 This behavior helps prevent accidental deletion of directories that
 still contain data.
 
+---
+
+## Lab 04 - Linux File Permissions
+
+### Objective
+
+The objective of this lab is to understand Linux file permissions and
+practice viewing and modifying access permissions using commands such
+as `ls -l` and `chmod`.
+
+### Create a Test File
+
+Command:
+
+```bash
+touch permission-test.txt
+ls -l permission-test.txt
+```
+### Result
+
+```text
+-rw-rw-r-- 1 kali kali 0 Sep 20 11:09 permission-test.txt
+```
+
+### Explanation
+
+The `ls -l` command displays detailed information about a file,
+including its permissions, owner, group, size, and modification time.
+
+The permission string for this file is:
+
+```text
+-rw-rw-r--
+```
+
+This means:
+
+- `-` - Regular file
+- `rw-` - Owner can read and write
+- `rw-` - Group can read and write
+- `r--` - Others can only read
+
+Linux file permissions are represented using:
+
+- `r` - Read
+- `w` - Write
+- `x` - Execute
+- `-` - Permission not granted
+
+ ### Change File Permissions to 600
+
+Command:
+
+```bash
+chmod 600 permission-test.txt
+ls -l permission-test.txt
+```
+
+### Result
+
+```text
+-rw------- 1 kali kali 0 Sep 20 11:09 permission-test.txt
+```
+
+### Explanation
+
+The `chmod` command is used to change file permissions in Linux.
+
+The permission value `600` means:
+
+- Owner: Read + Write (`rw-`)
+- Group: No permissions (`---`)
+- Others: No permissions (`---`)
+
+The resulting permission string is:
+
+```text
+-rw-------
+```
+
+This configuration is useful for files that should only be accessible
+by their owner.
+
+### Change File Permissions to 755
+
+Command:
+
+```bash
+chmod 755 permission-test.txt
+ls -l permission-test.txt
+```
+
+### Result
+
+```text
+-rwxr-xr-x 1 kali kali 0 Sep 20 11:09 permission-test.txt
+```
+
+### Explanation
+
+The `chmod 755` command changes the file permissions so that the owner
+has full read, write, and execute permissions, while the group and
+others have read and execute permissions.
+
+The numeric permissions are calculated as:
+
+- Read (`r`) = 4
+- Write (`w`) = 2
+- Execute (`x`) = 1
+
+Therefore:
+
+- Owner: `rwx` = 4 + 2 + 1 = 7
+- Group: `r-x` = 4 + 1 = 5
+- Others: `r-x` = 4 + 1 = 5
+
+This produces the permission string `rwxr-xr-x`.
+
+### Change File Permissions to 644
+
+Command:
+
+```bash
+chmod 644 permission-test.txt
+ls -l permission-test.txt
+```
+
+### Result
+
+```text
+-rw-r--r-- 1 kali kali 0 Sep 20 11:09 permission-test.txt
+```
+
+### Explanation
+
+The `chmod 644` command changes the file permissions so that the owner
+can read and write the file, while the group and others can only read it.
+
+The numeric permissions are:
+
+- Owner: `rw-` = 4 + 2 = 6
+- Group: `r--` = 4
+- Others: `r--` = 4
+
+Therefore, `644` produces the permission string `rw-r--r--`.
+
+### Cleanup
+
+After completing the permission tests, the temporary file was removed.
+
+Command:
+
+```bash
+rm permission-test.txt
+ls -l permission-test.txt
+```
+
+### Result
+
+```text
+ls: cannot access 'permission-test.txt': No such file or directory
+```
+
+This confirms that the test file was successfully removed.
+
+### Lab Conclusion
+
+This lab demonstrated how Linux file permissions control access to files.
+I practiced viewing permissions with `ls -l` and modifying permissions
+using `chmod`.
+
+The permission modes tested were:
+
+- `600` - Owner can read and write; group and others have no permissions.
+- `755` - Owner can read, write, and execute; group and others can read and execute.
+- `644` - Owner can read and write; group and others can only read.
+
+Understanding Linux permissions is important in cybersecurity because
+incorrect permissions can expose sensitive files or allow unauthorized
+users to modify or execute files.
+
+
 
