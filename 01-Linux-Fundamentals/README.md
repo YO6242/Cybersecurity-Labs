@@ -581,5 +581,319 @@ Understanding Linux permissions is important in cybersecurity because
 incorrect permissions can expose sensitive files or allow unauthorized
 users to modify or execute files.
 
+---
+
+## Lab 05 - Linux Users and Groups
+
+### Objective
+
+The objective of this lab is to understand Linux users and groups and
+practice commands used to identify user accounts, user IDs, group IDs,
+and group memberships.
+
+### Check the Current User
+
+Command:
+
+```bash
+whoami
+```
+### Result
+
+```text
+kali
+```
+### Explanation
+
+The `whoami` command displays the username of the currently logged-in
+user. In this lab, the current user is `kali`.
+
+### Check User and Group Information
+
+Command:
+
+```bash
+id
+```
+
+### Result
+
+```text
+uid=1000(kali) gid=1000(kali) groups=1000(kali),4(adm),20(dialout),24(cdrom),25(floppy),27(sudo),29(audio),30(dip),44(video),46(plugdev),100(users),101(netdev),102(scanner),118(wireshark),119(kaboxer),968(vboxsf),982(bluetooth),999(lpadmin)
+```
+
+### Explanation
+
+The `id` command displays the current user's User ID (UID), primary
+Group ID (GID), and group memberships.
+
+In this system:
+
+- `uid=1000(kali)` - The user `kali` has UID 1000.
+- `gid=1000(kali)` - The primary group is `kali` with GID 1000.
+- `groups=...` - Shows all groups that the user belongs to.
+- `sudo` - Allows the user to perform authorized administrative tasks using `sudo`.
+- `wireshark` - Provides access associated with Wireshark packet capture.
+- `vboxsf` - Used for VirtualBox shared-folder access.
+
+### Check Group Memberships
+
+Command:
+
+```bash
+groups
+```
+
+### Result
+
+```text
+kali adm dialout cdrom floppy sudo audio dip video plugdev users netdev scanner wireshark kaboxer vboxsf bluetooth lpadmin
+```
+
+### Explanation
+
+The `groups` command displays all groups that the current user belongs to.
+
+The user `kali` belongs to several groups. Some important examples are:
+
+- `sudo` - Allows authorized administrative commands to be executed with elevated privileges.
+- `wireshark` - Provides access associated with network packet capturing.
+- `vboxsf` - Provides access to VirtualBox shared folders.
+- `audio` and `video` - Provide access to audio and video devices.
+- `plugdev` - Provides access to certain removable and connected devices.
+
+Group membership is important in Linux security because permissions and
+access to system resources can be granted to groups instead of individual
+users.
+
+### View System User Accounts
+
+Command:
+
+```bash
+cut -d: -f1 /etc/passwd
+```
+
+### Example Result
+
+```text
+root
+daemon
+www-data
+sshd
+postgres
+mysql
+kali
+```
+
+### Explanation
+
+The `/etc/passwd` file contains information about user accounts on the
+Linux system. The `cut` command was used to extract only the username
+field.
+
+Not every account shown is a normal human user. Linux also uses system
+and service accounts to run specific services with controlled privileges.
+
+For example:
+
+- `root` - The system administrator account.
+- `www-data` - Commonly associated with web server processes.
+- `sshd` - Associated with the SSH service.
+- `postgres` - Associated with PostgreSQL.
+- `mysql` - Associated with MySQL/MariaDB.
+- `kali` - The normal user account used in this lab.
+
+Using separate service accounts helps support the principle of least
+privilege by limiting the permissions available to individual services.
+
+### View a Specific User Account
+
+Command:
+
+```bash
+grep '^kali:' /etc/passwd
+```
+
+### Result
+
+```text
+kali:x:1000:1000::/home/kali:/usr/bin/zsh
+```
+
+### Explanation
+
+This command searches `/etc/passwd` for the account named `kali`.
+
+The fields are separated by colons (`:`):
+
+- `kali` - Username
+- `x` - Indicates that password information is stored separately
+- `1000` - User ID (UID)
+- `1000` - Primary Group ID (GID)
+- Empty field - User information/comment field
+- `/home/kali` - User's home directory
+- `/usr/bin/zsh` - User's login shell
+
+This demonstrates how Linux stores basic account information and assigns
+each user a UID, GID, home directory, and login shell.
+
+### Check the Root User
+
+Command:
+
+```bash
+id root
+```
+
+### Result
+
+```text
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+### Explanation
+
+The `root` account is the Linux superuser account.
+
+- `uid=0` - Root has User ID 0.
+- `gid=0` - Root has Group ID 0.
+- `groups=0(root)` - Root belongs to the root group.
+
+A normal user such as `kali` has a different UID, such as `1000`,
+while the root account uses UID `0`.
+
+The root account has extensive privileges, so administrative access
+should be used carefully and only when required.
+
+### Check the Root User
+
+Command:
+
+```bash
+id root
+```
+
+### Result
+
+```text
+uid=0(root) gid=0(root) groups=0(root)
+```
+
+### Explanation
+
+The `root` account is the Linux superuser account.
+
+- `uid=0` - Root has User ID 0.
+- `gid=0` - Root has Group ID 0.
+- `groups=0(root)` - Root belongs to the root group.
+
+A normal user such as `kali` has a different UID, such as `1000`,
+while the root account uses UID `0`.
+
+The root account has extensive privileges, so administrative access
+should be used carefully and only when required.
+
+### Check Sudo Privileges
+
+Command:
+
+```bash
+sudo -l
+```
+
+### Result
+
+```text
+Matching Defaults entries for kali on kali:
+    secure_path=/usr/sbin:/usr/bin:/sbin:/bin
+
+User kali may run the following commands on kali:
+    (ALL : ALL) ALL
+```
+
+### Explanation
+
+The `sudo -l` command lists the commands that the current user is
+allowed to execute using `sudo`.
+
+The result:
+
+```text
+(ALL : ALL) ALL
+```
+
+shows that the `kali` user is permitted to run all commands through
+`sudo` with elevated privileges.
+
+This is important in Linux security because sudo permissions determine
+which users can perform administrative operations. Excessive sudo
+permissions can increase security risk, so privileged access should be
+granted according to the principle of least privilege.
+
+### Lab Conclusion
+
+In this lab, I practiced Linux user and group management concepts using
+commands such as `whoami`, `id`, `groups`, `cut`, `grep`, and `sudo -l`.
+
+I learned how Linux identifies users using UIDs, organizes permissions
+using groups and GIDs, stores basic account information in `/etc/passwd`,
+and controls administrative access using sudo privileges.
+
+Understanding users, groups, and privilege management is important for
+Linux system administration and cybersecurity because these mechanisms
+help control access to system resources.
+
+### Check Sudo Privileges
+
+Command:
+
+```bash
+sudo -l
+```
+
+### Result
+
+```text
+Matching Defaults entries for kali on kali:
+    secure_path=/usr/sbin:/usr/bin:/sbin:/bin
+
+User kali may run the following commands on kali:
+    (ALL : ALL) ALL
+```
+
+### Explanation
+
+The `sudo -l` command lists the commands that the current user is
+allowed to execute using `sudo`.
+
+The result:
+
+```text
+(ALL : ALL) ALL
+```
+
+shows that the `kali` user is permitted to run all commands through
+`sudo` with elevated privileges.
+
+This is important in Linux security because sudo permissions determine
+which users can perform administrative operations. Excessive sudo
+permissions can increase security risk, so privileged access should be
+granted according to the principle of least privilege.
+
+### Lab Conclusion
+
+In this lab, I practiced Linux user and group management concepts using
+commands such as `whoami`, `id`, `groups`, `cut`, `grep`, and `sudo -l`.
+
+I learned how Linux identifies users using UIDs, organizes permissions
+using groups and GIDs, stores basic account information in `/etc/passwd`,
+and controls administrative access using sudo privileges.
+
+Understanding users, groups, and privilege management is important for
+Linux system administration and cybersecurity because these mechanisms
+help control access to system resources.
+
+
 
 
