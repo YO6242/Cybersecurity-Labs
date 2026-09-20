@@ -1174,6 +1174,689 @@ can help identify unexpected processes, unauthorized services, abnormal
 resource usage, and suspicious system activity.
 
 
+---
+
+## Lab 07 - Linux Networking Fundamentals
+
+### Objective
+
+The objective of this lab is to understand basic Linux networking and
+practice commands used to inspect network interfaces, IP addresses,
+routing information, and network connectivity.
+
+### View Network Interfaces and IP Addresses
+
+Command:
+
+```bash
+ip addr
+```
+### View Network Interfaces and IP Addresses
+
+Command:
+
+```bash
+ip addr
+```
+
+### Example Result
+
+```text
+1: lo: <LOOPBACK,UP,LOWER_UP>
+    inet 127.0.0.1/8
+
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP>
+    inet6 fe80::f8bf:8070:cd17:1564/64
+```
+
+### Explanation
+
+The `ip addr` command displays the network interfaces and IP addresses
+configured on the Linux system.
+
+In this result:
+
+- `lo` - The loopback interface used for communication with the local system.
+- `127.0.0.1` - The IPv4 loopback address, also known as localhost.
+- `eth0` - The Ethernet network interface.
+- `UP` - Indicates that the network interface is enabled.
+- `LOWER_UP` - Indicates that the interface has an active link.
+- `inet` - Indicates an IPv4 address.
+- `inet6` - Indicates an IPv6 address.
+- `/8` and `/64` - Represent network prefix lengths.
+
+The `eth0` interface currently shows an IPv6 link-local address but no
+IPv4 address.
+
+Inspecting network interfaces is important in cybersecurity because it
+helps identify network connectivity, interface configuration, and the
+addresses assigned to a system.
+
+### View IPv4 Addresses Only
+
+Command:
+
+```bash
+ip -4 addr
+```
+
+### Result
+
+```text
+1: lo: <LOOPBACK,UP,LOWER_UP>
+    inet 127.0.0.1/8 scope host lo
+```
+
+### Explanation
+
+The `ip -4 addr` command displays only IPv4 addresses configured on the
+system.
+
+In this result, only the loopback interface (`lo`) has an IPv4 address:
+
+- `127.0.0.1` - IPv4 loopback address.
+- `/8` - Network prefix length.
+- `scope host` - The address is valid only within the local system.
+
+The `eth0` interface does not currently have an IPv4 address assigned.
+This indicates that IPv4 network configuration has not been completed
+for that interface.
+
+### View the IPv4 Routing Table
+
+Command:
+
+```bash
+ip route
+```
+
+### Result
+
+```text
+No IPv4 routes were displayed.
+```
+
+### Explanation
+
+The `ip route` command displays the IPv4 routing table used by Linux to
+determine where network traffic should be sent.
+
+In this test, no IPv4 routes were displayed. The `eth0` interface also
+did not have an IPv4 address assigned.
+
+Normally, a connected system may contain entries such as a local network
+route and a default route through a gateway.
+
+Checking the routing table is useful when troubleshooting network
+connectivity and identifying how traffic is routed through a system.
+
+### Check Network Device Status
+
+Command:
+
+```bash
+nmcli device status
+```
+
+### Result
+
+```text
+DEVICE  TYPE      STATE                   CONNECTION
+lo      loopback  connected (externally)  lo
+eth0    ethernet  disconnected            --
+```
+
+### Explanation
+
+The `nmcli device status` command displays the status of network devices
+managed by NetworkManager.
+
+In this result:
+
+- `lo` is the loopback interface and is connected locally.
+- `eth0` is the Ethernet interface.
+- `disconnected` indicates that `eth0` is not currently connected to a
+  network connection profile.
+- `--` under CONNECTION indicates that no active NetworkManager
+  connection is associated with `eth0`.
+
+This explains why the `eth0` interface currently has no IPv4 address and
+why no IPv4 route was displayed.
+
+### View Network Connection Profiles
+
+Command:
+
+```bash
+nmcli connection show
+```
+
+### Result
+
+```text
+NAME                TYPE
+lo                  loopback
+Wired connection 1  ethernet
+```
+
+### Explanation
+
+The `nmcli connection show` command displays network connection profiles
+configured in NetworkManager.
+
+In this result:
+
+- `lo` represents the loopback connection.
+- `Wired connection 1` is an Ethernet connection profile.
+- The Ethernet profile exists, but the `eth0` interface was previously
+  shown as disconnected.
+
+A connection profile contains network configuration that NetworkManager
+can use when connecting an interface to a network.
+
+### Inspect IPv4 Connection Configuration
+
+Command:
+
+```bash
+nmcli -f connection.id,connection.interface-name,ipv4.method,ipv4.addresses,ipv4.gateway connection show "Wired connection 1"
+```
+
+### Result
+
+```text
+connection.id:              Wired connection 1
+connection.interface-name:  eth0
+ipv4.method:                auto
+ipv4.addresses:             --
+ipv4.gateway:               --
+```
+
+### Explanation
+
+The connection profile is associated with the `eth0` network interface.
+
+The `ipv4.method` value is set to `auto`, which means NetworkManager is
+configured to obtain IPv4 network settings automatically, normally
+using DHCP.
+
+No static IPv4 address or gateway has been manually configured for this
+connection profile.
+
+### Check Ethernet Interface Link State
+
+Command:
+
+```bash
+ip link show eth0
+```
+
+### Result
+
+```text
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP>
+    state UP
+    link/ether 08:00:27:5a:87:bc
+```
+
+### Explanation
+
+The `ip link show eth0` command displays link-layer information about
+the `eth0` network interface.
+
+In this result:
+
+- `UP` - The interface is enabled.
+- `LOWER_UP` - The underlying network link is available.
+- `state UP` - The interface is operational at the link layer.
+- `link/ether` - Displays the MAC address of the Ethernet interface.
+
+The Ethernet link is available, but the earlier DHCP connection attempt
+failed to obtain IPv4 configuration. Therefore, further investigation
+of the DHCP/network configuration is required.
+
+### Verify the IPv4 Address
+
+Command:
+
+```bash
+ip -4 addr show eth0
+```
+
+### Result
+
+```text
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP>
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic eth0
+```
+
+### Explanation
+
+The `eth0` interface successfully received an IPv4 address after the
+VirtualBox network configuration was changed to NAT.
+
+- `10.0.2.15` - IPv4 address assigned to the Kali Linux virtual machine.
+- `/24` - Network prefix length.
+- `10.0.2.255` - Broadcast address.
+- `dynamic` - The IPv4 address was assigned automatically using DHCP.
+- `scope global` - The address can be used for network communication
+  beyond the local host.
+
+This confirms that the Ethernet interface now has valid IPv4
+configuration.
+
+### Verify the Routing Table
+
+Command:
+
+```bash
+ip route
+```
+
+### Result
+
+```text
+default via 10.0.2.2 dev eth0 proto dhcp src 10.0.2.15 metric 100
+10.0.2.0/24 dev eth0 proto kernel scope link src 10.0.2.15 metric 100
+```
+
+### Explanation
+
+The `ip route` command displays the system's IPv4 routing table.
+
+In this result:
+
+- `default via 10.0.2.2` - Traffic for networks without a more specific
+  route is sent through the default gateway at `10.0.2.2`.
+- `dev eth0` - The `eth0` interface is used for the route.
+- `src 10.0.2.15` - The Kali Linux system uses this IPv4 address as the
+  source address.
+- `10.0.2.0/24` - Represents the directly connected IPv4 network.
+- `proto dhcp` - The default route was obtained through DHCP.
+
+This confirms that the system now has an IPv4 address and a valid
+default route.
+
+### Test Default Gateway Connectivity
+
+Command:
+
+```bash
+ping -c 4 10.0.2.2
+```
+
+### Result
+
+```text
+4 packets transmitted, 4 received, 0% packet loss
+rtt min/avg/max/mdev = 0.362/0.565/1.002/0.257 ms
+```
+
+### Explanation
+
+The `ping` command was used to test connectivity between the Kali Linux
+virtual machine and its default gateway.
+
+The `-c 4` option instructs `ping` to send four ICMP Echo Request
+packets.
+
+In this test:
+
+- `4 packets transmitted` - Four ICMP requests were sent.
+- `4 received` - All four responses were received.
+- `0% packet loss` - No packets were lost.
+- `10.0.2.2` - The default gateway used by the virtual machine.
+
+This confirms that the Kali Linux virtual machine can successfully
+communicate with its default gateway.
+
+### Test Internet IP Connectivity
+
+Command:
+
+```bash
+ping -c 4 8.8.8.8
+```
+
+### Result
+
+```text
+4 packets transmitted, 4 received, 0% packet loss
+rtt min/avg/max/mdev = 79.669/110.059/190.798/46.793 ms
+```
+
+### Explanation
+
+The `ping` command was used to test connectivity to a public Internet
+IP address.
+
+In this test:
+
+- `8.8.8.8` - A public IP address used for the connectivity test.
+- `4 packets transmitted` - Four ICMP Echo Requests were sent.
+- `4 received` - All four responses were received.
+- `0% packet loss` - No packets were lost.
+
+This confirms that the Kali Linux virtual machine has working IP
+connectivity beyond its local network.
+
+Testing an IP address directly is also useful when troubleshooting
+because it can help distinguish general network connectivity problems
+from DNS name-resolution problems.
+
+### Test DNS Resolution
+
+Command:
+
+```bash
+ping -c 4 google.com
+```
+
+### Result
+
+```text
+PING google.com (142.250.146.113)
+
+4 packets transmitted, 4 received, 0% packet loss
+rtt min/avg/max/mdev = 61.449/74.258/80.690/7.526 ms
+```
+
+### Explanation
+
+The `ping` command was used with a domain name to test both DNS
+resolution and network connectivity.
+
+The domain name `google.com` was successfully resolved to an IP address,
+which confirms that DNS name resolution is working.
+
+The test also received responses to all four ICMP Echo Requests with
+0% packet loss.
+
+This confirms that the Kali Linux virtual machine has:
+
+- A working network interface
+- A valid IPv4 address
+- A default gateway
+- Internet connectivity
+- Working DNS name resolution
+
+DNS testing is important in network troubleshooting because a system
+may have Internet connectivity while still being unable to resolve
+domain names.
+
+### View DNS Configuration
+
+Command:
+
+```bash
+cat /etc/resolv.conf
+```
+
+### Result
+
+```text
+# Generated by NetworkManager
+nameserver 10.0.2.3
+nameserver fd17:625c:f037:2::3
+```
+
+### Explanation
+
+The `/etc/resolv.conf` file contains DNS resolver configuration used by
+the Linux system.
+
+In this result:
+
+- `nameserver 10.0.2.3` - IPv4 DNS resolver configured for the system.
+- `nameserver fd17:625c:f037:2::3` - IPv6 DNS resolver.
+- `Generated by NetworkManager` - Indicates that NetworkManager manages
+  the DNS configuration automatically.
+
+DNS servers translate domain names, such as `google.com`, into IP
+addresses that computers can use for network communication.
+
+Inspecting DNS configuration is useful in cybersecurity and network
+troubleshooting when investigating name-resolution problems.
+
+### Perform a DNS Lookup
+
+Command:
+
+```bash
+nslookup google.com
+```
+
+### Example Result
+
+```text
+Server:         10.0.2.3
+Address:        10.0.2.3#53
+
+Non-authoritative answer:
+Name:   google.com
+Address: 142.250.146.100
+Name:   google.com
+Address: 142.250.146.113
+Name:   google.com
+Address: 2404:6800:4000:100e::64
+```
+
+### Explanation
+
+The `nslookup` command is used to query DNS servers and resolve domain
+names into IP addresses.
+
+In this result:
+
+- `10.0.2.3` - The DNS server used for the query.
+- `#53` - DNS normally uses port 53.
+- `google.com` - The domain name being resolved.
+- Multiple IPv4 addresses were returned for the domain.
+- Multiple IPv6 addresses were also returned.
+- `Non-authoritative answer` means the response was provided by a DNS
+  resolver rather than directly by the authoritative DNS server for
+  the domain.
+
+DNS lookup tools are useful in cybersecurity for network
+troubleshooting, reconnaissance in authorized environments, and
+investigating domain-name resolution.
+
+### Check Listening Network Ports
+
+Command:
+
+```bash
+ss -tuln
+```
+
+### Result
+
+```text
+Netid State Recv-Q Send-Q Local Address:Port Peer Address:Port
+```
+
+### Explanation
+
+The `ss` command is used to inspect network sockets on a Linux system.
+
+The options used are:
+
+- `-t` - Display TCP sockets.
+- `-u` - Display UDP sockets.
+- `-l` - Display listening sockets only.
+- `-n` - Display numerical IP addresses and port numbers.
+
+In this test, no listening TCP or UDP sockets were displayed.
+
+This means that, at the time of the test, no services matching these
+options were listening on network ports.
+
+Checking listening ports is important in cybersecurity because exposed
+network services can increase the attack surface of a system.
+
+### Identify a Listening TCP Port
+
+A temporary local HTTP server was started using:
+
+```bash
+python3 -m http.server 8080 --bind 127.0.0.1
+```
+
+The listening TCP sockets were then checked using:
+
+```bash
+ss -tln
+```
+
+### Result
+
+```text
+State   Recv-Q  Send-Q  Local Address:Port  Peer Address:Port
+LISTEN  0       5       127.0.0.1:8080      0.0.0.0:*
+```
+
+### Explanation
+
+The result shows that a TCP service is listening on port `8080`.
+
+- `LISTEN` - The socket is waiting for incoming TCP connections.
+- `127.0.0.1` - The service is bound to the local loopback interface.
+- `8080` - The TCP port used by the temporary HTTP server.
+- `0.0.0.0:*` in the peer field indicates that there is no specific
+  remote peer associated with the listening socket.
+
+Because the server was bound to `127.0.0.1`, it is accessible only from
+the local system and is not directly exposed through the `eth0`
+interface.
+
+This demonstrates how Linux networking tools can be used to identify
+services that are listening on network ports.
+
+### Stop the Temporary HTTP Server
+
+The temporary HTTP server was stopped by pressing:
+
+```text
+Ctrl + C
+```
+
+### Result
+
+```text
+^C
+Keyboard interrupt received, exiting.
+```
+
+### Explanation
+
+`Ctrl + C` sends an interrupt signal to the foreground process running
+in the terminal.
+
+In this test, the Python HTTP server received the interrupt and
+terminated successfully.
+
+Stopping temporary services after testing is an important security
+practice because unnecessary listening services can increase the attack
+surface of a system.
+
+### Verify the Port is Closed
+
+Command:
+
+```bash
+ss -tln
+```
+
+### Result
+
+```text
+State  Recv-Q  Send-Q  Local Address:Port  Peer Address:Port
+```
+
+### Explanation
+
+After stopping the temporary HTTP server, the `ss -tln` command was
+used again to check listening TCP sockets.
+
+Port `8080` was no longer displayed, confirming that the HTTP server
+had stopped and the listening socket had been closed.
+
+This demonstrates an important cybersecurity principle: temporary or
+unnecessary network services should be stopped when they are no longer
+required in order to reduce the system's attack surface.
+
+### Trace the Network Path
+
+Command:
+
+```bash
+traceroute 8.8.8.8
+```
+
+### Result
+
+```text
+traceroute to 8.8.8.8 (8.8.8.8), 30 hops max, 60 byte packets
+1  10.0.2.2 (10.0.2.2)  0.348 ms  0.322 ms  0.309 ms
+2  10.0.2.2 (10.0.2.2)  5.087 ms  5.077 ms  6.783 ms
+```
+
+### Explanation
+
+The `traceroute` command is used to examine the network path toward a
+destination.
+
+In this test:
+
+- `8.8.8.8` was used as the destination.
+- `30 hops max` represents the maximum number of hops traceroute was
+  configured to test.
+- `10.0.2.2` is the VirtualBox NAT gateway used by the Kali Linux
+  virtual machine.
+- The time values shown in milliseconds represent round-trip timing
+  measurements for traceroute probes.
+
+In this virtualized NAT environment, the complete external network path
+was not displayed. However, the result demonstrates how traceroute can
+be used to investigate the path network traffic takes toward a
+destination.
+
+Traceroute is useful in network troubleshooting and cybersecurity for
+investigating routing paths and locating connectivity problems.
+
+### Lab Conclusion
+
+In this lab, I practiced fundamental Linux networking commands and
+learned how to inspect and troubleshoot network connectivity.
+
+The practical activities included:
+
+- Viewing network interfaces and IP addresses with `ip addr`
+- Inspecting IPv4 configuration with `ip -4 addr`
+- Viewing the routing table with `ip route`
+- Checking NetworkManager status with `nmcli`
+- Testing gateway connectivity with `ping`
+- Testing Internet connectivity
+- Verifying DNS resolution
+- Inspecting DNS configuration
+- Performing DNS lookups with `nslookup`
+- Inspecting listening ports with `ss`
+- Starting and stopping a temporary local HTTP service
+- Tracing a network path with `traceroute`
+
+During troubleshooting, the Kali Linux virtual machine initially failed
+to obtain an IPv4 address through DHCP while using the VirtualBox
+Bridged Adapter configuration. After changing the virtual network mode
+to NAT, the `eth0` interface successfully received the dynamic IPv4
+address `10.0.2.15/24`, a default route was installed through
+`10.0.2.2`, and Internet and DNS connectivity were successfully
+verified.
+
+These networking skills are important for cybersecurity because they
+provide the foundation for network reconnaissance, traffic analysis,
+service identification, vulnerability assessment, and network
+troubleshooting.
+
 
 
 
