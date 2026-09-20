@@ -894,6 +894,289 @@ Understanding users, groups, and privilege management is important for
 Linux system administration and cybersecurity because these mechanisms
 help control access to system resources.
 
+---
+
+## Lab 06 - Linux Processes and Services
+
+### Objective
+
+The objective of this lab is to understand Linux processes and services
+and practice commands used to identify running processes and inspect
+system activity.
+
+### View Running Processes
+
+Command:
+
+```bash
+ps
+```
+### Result
+
+```text
+PID TTY          TIME CMD
+1952 pts/0    00:00:00 zsh
+2240 pts/0    00:00:00 ps
+```
+
+### Explanation
+
+The `ps` command displays processes associated with the current terminal
+session.
+
+- `PID` - Unique Process ID.
+- `TTY` - Terminal associated with the process.
+- `TIME` - CPU time used by the process.
+- `CMD` - Name of the command or process.
+
+In this result, `zsh` is the current shell and `ps` is the command used
+to display the process information.
+
+### View System-Wide Processes
+
+Command:
+
+```bash
+ps -ef | head
+```
+
+### Result
+
+```text
+UID          PID    PPID  C STIME TTY          TIME CMD
+root           1       0  0 12:21 ?        00:00:00 /sbin/init splash
+root           2       0  0 12:21 ?        00:00:00 [kthreadd]
+root           3       2  0 12:21 ?        00:00:00 [pool_workqueue_release]
+root           4       2  0 12:21 ?        00:00:00 [kworker/R-rcu_gp]
+root           5       2  0 12:21 ?        00:00:00 [kworker/R-sync_wq]
+```
+
+### Explanation
+
+The `ps -ef` command displays running processes across the system in
+full-format output. The `head` command limits the displayed output to
+the first few lines.
+
+Important fields include:
+
+- `UID` - User that owns the process.
+- `PID` - Process ID.
+- `PPID` - Parent Process ID.
+- `C` - CPU utilization information.
+- `STIME` - Process start time.
+- `TTY` - Associated terminal.
+- `TIME` - CPU time used by the process.
+- `CMD` - Command that started the process.
+
+For example, PID `1` is the system initialization process, while entries
+such as `kthreadd` and `kworker` represent kernel-related processes.
+
+### Monitor Processes in Real Time
+
+Command:
+
+```bash
+top
+```
+
+### Example Result
+
+```text
+Tasks: 177 total, 1 running, 176 sleeping, 0 stopped, 0 zombie
+
+MiB Mem : 1969.1 total, 303.6 free, 779.4 used
+MiB Swap: 953.7 total, 953.7 free, 0.0 used
+
+PID   USER   %CPU   %MEM   COMMAND
+611   root    3.7    7.8   Xorg
+1916  kali    1.0    3.6   qterminal
+```
+
+### Explanation
+
+The `top` command provides a real-time view of running processes and
+system resource usage.
+
+It can display:
+
+- Number of running and sleeping processes
+- CPU utilization
+- Memory usage
+- Swap usage
+- Process IDs (PID)
+- Process owners
+- CPU usage per process
+- Memory usage per process
+- Running command names
+
+The `q` key can be used to exit `top`.
+
+This command is useful in system administration and cybersecurity for
+monitoring system activity and identifying processes that consume
+unusual amounts of CPU or memory.
+
+### View Running Services
+
+Command:
+
+```bash
+systemctl --type=service --state=running
+```
+
+### Example Result
+
+```text
+UNIT                           LOAD   ACTIVE SUB     DESCRIPTION
+accounts-daemon.service        loaded active running Accounts Service
+cron.service                   loaded active running Regular background program processing daemon
+dbus.service                   loaded active running D-Bus System Message Bus
+lightdm.service                loaded active running Light Display Manager
+NetworkManager.service         loaded active running Network Manager
+systemd-journald.service       loaded active running Journal Service
+systemd-logind.service         loaded active running User Login Management
+virtualbox-guest-utils.service loaded active running VirtualBox guest utils
+```
+
+### Explanation
+
+The `systemctl` command is used to inspect and manage services on
+systems that use systemd.
+
+The options used in this command are:
+
+- `--type=service` - Displays service units.
+- `--state=running` - Displays only currently running services.
+- `LOAD` - Indicates whether the service configuration was loaded.
+- `ACTIVE` - Shows the general activation state.
+- `SUB` - Shows the detailed service state.
+- `DESCRIPTION` - Provides a description of the service.
+
+Monitoring running services is important in cybersecurity because
+unnecessary, unexpected, or unauthorized services may increase the
+system's attack surface.
+
+### Inspect a Specific Service
+
+Command:
+
+```bash
+systemctl status NetworkManager --no-pager
+```
+
+### Example Result
+
+```text
+NetworkManager.service - Network Manager
+Loaded: loaded (...; enabled; preset: enabled)
+Active: active (running)
+Main PID: 505 (NetworkManager)
+Memory: 20M
+CGroup: /system.slice/NetworkManager.service
+        └─505 /usr/sbin/NetworkManager --no-daemon
+```
+
+### Explanation
+
+The `systemctl status` command displays detailed information about a
+specific systemd service.
+
+In this example:
+
+- `Loaded` - The NetworkManager service configuration was successfully loaded.
+- `enabled` - The service is configured to start automatically.
+- `Active: active (running)` - The service is currently running.
+- `Main PID` - Identifies the main process associated with the service.
+- `Memory` - Shows the memory being used by the service.
+- `CGroup` - Shows the control group containing the service process.
+
+NetworkManager is responsible for managing network connections on the
+system. Checking service status is useful in system administration and
+cybersecurity when investigating whether expected or unexpected services
+are running.
+
+### Find a Process by Name
+
+Command:
+
+```bash
+pgrep -a NetworkManager
+```
+
+### Result
+
+```text
+505 /usr/sbin/NetworkManager --no-daemon
+```
+
+### Explanation
+
+The `pgrep` command searches for running processes by name.
+
+The `-a` option displays both the Process ID (PID) and the full command
+associated with the matching process.
+
+In this result:
+
+- `505` - Process ID (PID)
+- `/usr/sbin/NetworkManager` - NetworkManager executable
+- `--no-daemon` - Command-line option used by the process
+
+This command is useful for quickly identifying whether a specific
+process is running and determining its PID.
+
+### View the Process Tree
+
+Command:
+
+```bash
+pstree -p | head -20
+```
+
+### Example Result
+
+```text
+systemd(1)-+-ModemManager(527)-+-{ModemManager}(535)
+           |                   |-{ModemManager}(547)
+           |                   `-{ModemManager}(550)
+           |-NetworkManager(505)-+-{NetworkManager}(533)
+           |                     |-{NetworkManager}(534)
+           |                     `-{NetworkManager}(537)
+           |-VBoxClient(1002)---VBoxClient(1004)
+```
+
+### Explanation
+
+The `pstree` command displays running processes in a hierarchical tree
+structure.
+
+The `-p` option displays the Process ID (PID) of each process, while
+`head -20` limits the displayed output to the first 20 lines.
+
+The output shows parent-child relationships between processes. For
+example, `systemd` has PID 1 and acts as the parent of many system
+services.
+
+Understanding process relationships is useful in cybersecurity when
+investigating system activity and identifying processes started by other
+processes.
+
+### Lab Conclusion
+
+In this lab, I practiced monitoring Linux processes and services using
+commands such as `ps`, `ps -ef`, `top`, `systemctl`, `pgrep`, and
+`pstree`.
+
+I learned how to identify process IDs, process owners, parent-child
+relationships, resource usage, and running system services.
+
+Process and service monitoring is important in cybersecurity because it
+can help identify unexpected processes, unauthorized services, abnormal
+resource usage, and suspicious system activity.
+
+
+
+
+
 
 
 
