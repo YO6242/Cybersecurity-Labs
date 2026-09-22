@@ -1857,6 +1857,489 @@ provide the foundation for network reconnaissance, traffic analysis,
 service identification, vulnerability assessment, and network
 troubleshooting.
 
+---
+
+## Lab 08 - Network Reconnaissance with Nmap
+
+### Objective
+
+The objective of this lab is to learn the fundamentals of network
+reconnaissance using Nmap in an authorized lab environment.
+
+The lab focuses on identifying hosts, ports, services, and basic network
+information while following ethical and authorized security testing
+practices.
+
+### Lab Environment
+
+- Operating System: Kali Linux
+- Tool: Nmap
+- Target: Localhost / Authorized Lab Systems
+- Testing Environment: Personal cybersecurity lab
+
+### Verify Nmap Installation
+
+Command:
+
+```bash
+nmap --version
+```
+
+### Result
+
+```text
+Nmap version 7.99
+Platform: x86_64-pc-linux-gnu
+Available nsock engines: epoll poll select
+```
+
+### Explanation
+
+The `nmap --version` command displays information about the installed
+Nmap version and its platform.
+
+In this system:
+
+- Nmap version `7.99` is installed.
+- The platform is `x86_64-pc-linux-gnu`.
+- IPv6 support is available.
+- Nmap is ready to perform network reconnaissance in the authorized
+  lab environment.
+
+Nmap is a network discovery and security auditing tool commonly used to
+identify hosts, open ports, services, and other network information.
+
+### Perform a Basic Localhost Scan
+
+Command:
+
+```bash
+nmap 127.0.0.1
+```
+
+### Result
+
+```text
+Nmap scan report for localhost (127.0.0.1)
+Host is up.
+
+All 1000 scanned ports on localhost are in ignored states.
+Not shown: 1000 closed tcp ports (reset)
+
+Nmap done: 1 IP address (1 host up) scanned.
+```
+
+### Explanation
+
+The `nmap 127.0.0.1` command performs a basic Nmap scan against the
+local system.
+
+In this result:
+
+- `127.0.0.1` represents the localhost or loopback address.
+- `Host is up` confirms that the target responded and is reachable.
+- Nmap scanned its default set of 1000 common TCP ports.
+- All 1000 scanned TCP ports were reported as closed.
+- A closed port indicates that the host is reachable, but no application
+  or service is currently listening on that port.
+
+This provides a basic example of how Nmap can be used to identify the
+network exposure of an authorized system.
+
+### Scan a Specific TCP Port
+
+A temporary HTTP server was running on localhost port `8080`.
+
+Command:
+
+```bash
+nmap -p 8080 127.0.0.1
+```
+
+### Result
+
+```text
+Nmap scan report for localhost (127.0.0.1)
+Host is up.
+
+PORT      STATE  SERVICE
+8080/tcp  open   http-proxy
+
+Nmap done: 1 IP address (1 host up) scanned.
+```
+
+### Explanation
+
+The `-p` option allows Nmap to scan a specific port.
+
+In this test:
+
+- `8080/tcp` - TCP port 8080 was scanned.
+- `open` - An application was listening and accepting connections on
+  the port.
+- `http-proxy` - Nmap's default service label associated with this port.
+
+The actual application used in this lab was a Python HTTP server.
+Therefore, a port-based service label does not necessarily identify the
+exact application running on the port.
+
+This demonstrates how Nmap can be used to identify open ports on an
+authorized system.
+
+### Perform Service and Version Detection
+
+Command:
+
+```bash
+nmap -sV -p 8080 127.0.0.1
+```
+
+### Result
+
+```text
+Nmap scan report for localhost (127.0.0.1)
+Host is up.
+
+PORT      STATE  SERVICE  VERSION
+8080/tcp  open   http     SimpleHTTPServer 0.6 (Python 3.14.7)
+
+Service detection performed.
+```
+
+### Explanation
+
+The `-sV` option enables Nmap service and version detection.
+
+Instead of relying only on the port number, Nmap sends service-detection
+probes to gather additional information about the application listening
+on the port.
+
+In this test:
+
+- `8080/tcp` - TCP port 8080 was scanned.
+- `open` - The port was accepting connections.
+- `http` - Nmap identified the protocol as HTTP.
+- `SimpleHTTPServer 0.6` - The HTTP server implementation was identified.
+- `Python 3.14.7` - Nmap also identified the associated Python version.
+
+Service and version detection is useful during authorized security
+assessments because identifying the actual software behind an open port
+provides more information than identifying the port alone.
+
+### Run Nmap Default Scripts
+
+Command:
+
+```bash
+nmap -sC -sV -p 8080 127.0.0.1
+```
+
+### Result
+
+```text
+PORT      STATE  SERVICE  VERSION
+8080/tcp  open   http     SimpleHTTPServer 0.6 (Python 3.14.7)
+
+http-server-header: SimpleHTTP/0.6 Python/3.14.7
+http-title: Directory listing for /
+```
+
+### Explanation
+
+The `-sC` option runs Nmap's default NSE (Nmap Scripting Engine)
+scripts, while `-sV` performs service and version detection.
+
+In this test:
+
+- `8080/tcp` was identified as an open TCP port.
+- `http` was identified as the running service.
+- `SimpleHTTPServer 0.6` was identified as the HTTP server.
+- `Python 3.14.7` was identified as the associated Python version.
+- `http-server-header` displayed information returned by the HTTP server.
+- `http-title` identified the page title as `Directory listing for /`.
+
+Nmap NSE scripts can collect additional information about network
+services during an authorized security assessment.
+
+The information obtained from scripts can help an analyst understand
+the exposed service before performing further security analysis.
+
+### Scan All TCP Ports
+
+Command:
+
+```bash
+nmap -p- 127.0.0.1
+```
+
+### Result
+
+```text
+Nmap scan report for localhost (127.0.0.1)
+Host is up.
+
+Not shown: 65534 closed tcp ports (reset)
+
+PORT      STATE  SERVICE
+8080/tcp  open   http-proxy
+
+Nmap done: 1 IP address (1 host up) scanned.
+```
+
+### Explanation
+
+The `-p-` option instructs Nmap to scan all TCP ports from port 1 to
+port 65535.
+
+In this test:
+
+- 65,535 TCP ports were scanned.
+- 65,534 ports were reported as closed.
+- TCP port `8080` was reported as open.
+- The open port belonged to the temporary HTTP server running on the
+  localhost system.
+
+A default Nmap scan normally checks a selected set of common ports,
+while `-p-` performs a complete TCP port scan.
+
+Scanning all ports can help identify services running on uncommon or
+non-standard ports during an authorized security assessment.
+
+### Compare Open and Closed Ports
+
+Command:
+
+```bash
+nmap -p 8080,8081 127.0.0.1
+```
+
+### Result
+
+```text
+Nmap scan report for localhost (127.0.0.1)
+Host is up.
+
+PORT      STATE   SERVICE
+8080/tcp  open    http-proxy
+8081/tcp  closed  blackice-icecap
+
+Nmap done: 1 IP address (1 host up) scanned.
+```
+
+### Explanation
+
+This scan demonstrates the difference between open and closed TCP ports.
+
+- `8080/tcp open` - A service is listening on TCP port 8080 and is
+  accepting connections.
+- `8081/tcp closed` - The target host is reachable, but no service is
+  listening on TCP port 8081.
+
+The service names shown by a basic Nmap scan can be based on known port
+assignments and do not necessarily identify the exact application
+running on the port.
+
+Understanding port states is important during network reconnaissance
+because they help identify which network services are exposed by an
+authorized target system.
+
+### Stop the Test HTTP Service
+
+The temporary HTTP server was stopped after completing the Nmap tests.
+
+```text
+Ctrl + C
+```
+
+### Result
+
+```text
+127.0.0.1 - - [22/Sep/2026 00:46:29] "GET / HTTP/1.1" 200 -
+^C
+Keyboard interrupt received, exiting.
+```
+
+### Explanation
+
+During the Nmap service and script detection tests, the HTTP server
+received an HTTP request and returned a `200` response.
+
+After the reconnaissance tests were completed, `Ctrl + C` was used to
+terminate the temporary Python HTTP server.
+
+Stopping temporary services after testing reduces unnecessary network
+exposure and keeps the lab environment clean.
+
+### Verify the Port After Stopping the Service
+
+After stopping the temporary HTTP server, the same port was scanned
+again.
+
+Command:
+
+```bash
+nmap -p 8080 127.0.0.1
+```
+
+### Result
+
+```text
+Nmap scan report for localhost (127.0.0.1)
+Host is up.
+
+PORT      STATE   SERVICE
+8080/tcp  closed  http-proxy
+
+Nmap done: 1 IP address (1 host up) scanned.
+```
+
+### Explanation
+
+The scan confirmed that TCP port `8080` changed from `open` to `closed`
+after the Python HTTP server was stopped.
+
+When the HTTP server was running:
+
+```text
+8080/tcp open
+```
+
+After the HTTP server was stopped:
+
+```text
+8080/tcp closed
+```
+
+An `open` port indicates that an application is listening and accepting
+connections on that port.
+
+A `closed` port indicates that the host is reachable, but no application
+is currently listening on that port.
+
+This test demonstrates that port states can change depending on the
+services currently running on a system.
+
+### Perform Host Discovery
+
+Command:
+
+```bash
+nmap -sn 127.0.0.1
+```
+
+### Result
+
+```text
+Nmap scan report for localhost (127.0.0.1)
+Host is up.
+
+Nmap done: 1 IP address (1 host up) scanned.
+```
+
+### Explanation
+
+The `-sn` option performs host discovery without carrying out a port
+scan.
+
+In this test:
+
+- `127.0.0.1` was the target localhost address.
+- Nmap identified the target as `Host is up`.
+- No TCP or UDP ports were scanned.
+
+Host discovery is commonly used during the reconnaissance stage to
+identify active systems before performing more detailed port and
+service scanning.
+
+Using host discovery first can help an analyst understand which systems
+are available within an authorized assessment scope.
+
+
+### Identify the Local Network
+
+Before performing host discovery across a network, the IPv4
+configuration of the Kali Linux network interface was checked.
+
+Command:
+
+```bash
+ip -4 addr show eth0
+```
+
+### Result
+
+```text
+2: eth0: <BROADCAST,MULTICAST,UP,LOWER_UP> state UP
+    inet 10.0.2.15/24 brd 10.0.2.255 scope global dynamic eth0
+```
+
+### Explanation
+
+The `eth0` interface was active and configured with the IPv4 address
+`10.0.2.15/24`.
+
+- `10.0.2.15` - IPv4 address assigned to the Kali Linux virtual machine.
+- `/24` - Network prefix, corresponding to the subnet mask
+  `255.255.255.0`.
+- `10.0.2.255` - Broadcast address.
+- `dynamic` - The address was dynamically assigned.
+
+The `/24` prefix identifies the local network as `10.0.2.0/24`.
+
+Identifying the network range is important before network discovery
+because security testing must remain within the authorized scope.
+
+### Discover Active Hosts on the Local Lab Network
+
+After identifying the local subnet, Nmap host discovery was performed
+across the authorized VirtualBox NAT network.
+
+Command:
+
+```bash
+nmap -sn 10.0.2.0/24
+```
+
+### Result
+
+```text
+Nmap scan report for 10.0.2.2
+Host is up.
+MAC Address: 52:54:00:12:35:00 (QEMU virtual NIC)
+
+Nmap scan report for 10.0.2.3
+Host is up.
+MAC Address: 52:54:00:12:35:00 (QEMU virtual NIC)
+
+Nmap scan report for 10.0.2.15
+Host is up.
+
+Nmap done: 256 IP addresses (3 hosts up) scanned.
+```
+
+### Explanation
+
+The `-sn` option performs host discovery without performing a port scan.
+
+The target `10.0.2.0/24` represents the local VirtualBox NAT lab
+network.
+
+Nmap checked the addresses within the subnet and identified three
+active IP addresses:
+
+- `10.0.2.2` - Active virtual network address.
+- `10.0.2.3` - Active virtual network address.
+- `10.0.2.15` - Kali Linux virtual machine.
+
+Nmap also displayed virtual NIC information for some addresses.
+
+This demonstrates how host discovery can be used to identify active
+systems within an authorized network range before performing more
+detailed reconnaissance.
+
+Network discovery should only be performed on systems and networks
+that are owned by the tester or explicitly authorized for security
+testing.
 
 
 
